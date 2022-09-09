@@ -176,7 +176,7 @@ class ParseTable:
         self._config = config
         self._symbol_pool = symbol_pool
         self._start_symbol = start_symbol
-        self.transitions = dict()
+        self.transitions = {}
         self.accept_state = None
 
         state_list = []
@@ -192,7 +192,7 @@ class ParseTable:
             state = state_list.pop(0)
             for item in state.items:
                 if item.is_end():
-                    self.transitions.setdefault(self.states[state], dict())[item.lookahead] = Transition(
+                    self.transitions.setdefault(self.states[state], {})[item.lookahead] = Transition(
                         self.states[state],
                         item.rule,
                         item.lookahead,
@@ -215,7 +215,7 @@ class ParseTable:
                         transition_type = Transition.TYPE_SHIFT
                     else:
                         transition_type = Transition.TYPE_GOTO
-                    self.transitions.setdefault(self.states[state], dict())[symbol] = Transition(
+                    self.transitions.setdefault(self.states[state], {})[symbol] = Transition(
                         self.states[state],
                         self.states[new_state],
                         symbol,
