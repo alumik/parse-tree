@@ -1,9 +1,9 @@
 from typing import *
 
+from ptree.symbol.symbol import AbstractSymbol, AbstractNonterminal, Symbol
+from ptree.symbol.pool import SymbolPool
 from ptree.lexer.fsm import NFA
 from ptree.parser.grammar import Grammar, ProductionRule
-from ptree.symbol.pool import SymbolPool
-from ptree.symbol.symbol import AbstractNonterminal, AbstractSymbol, Symbol
 
 
 class Regex:
@@ -51,105 +51,15 @@ class Regex:
 
 class RegexProductionRule(ProductionRule):
 
-    def __init__(self, left: AbstractNonterminal, right: List[AbstractSymbol], rule_str: str):
+    def __init__(self, left: AbstractNonterminal, right: List[AbstractSymbol]):
         super().__init__(left, right)
-        self._handlers = [
-            self._handler_0,
-            self._handler_1,
-            self._handler_2,
-            self._handler_3,
-            self._handler_4,
-            self._handler_5,
-            self._handler_6,
-            self._handler_7,
-            self._handler_8,
-            self._handler_9,
-            self._handler_10,
-            self._handler_11,
-            self._handler_12,
-            self._handler_13,
-            self._handler_14,
-        ]
-        self._handler = self._handlers[RegexEngine.RULES.index(rule_str)]
-
-    @classmethod
-    def from_string(cls, rule_str: str, symbol_pool: SymbolPool) -> 'RegexProductionRule':
-        if '->' not in rule_str:
-            raise ValueError(f'invalid rule: {rule_str}')
-        left, right = rule_str.split('->')
-        return cls(
-            symbol_pool.get_nonterminal(left.strip()),
-            [symbol_pool.get_symbol(right.strip()) for right in right.split()],
-            rule_str,
-        )
-
-    def _handler_0(self, nodes: List[NFA], children: List[Symbol]) -> NFA:
-        raise NotImplementedError()
-
-    def _handler_1(self, nodes: List[NFA], children: List[Symbol]) -> NFA:
-        raise NotImplementedError()
-
-    def _handler_2(self, nodes: List[NFA], children: List[Symbol]) -> NFA:
-        raise NotImplementedError()
-
-    def _handler_3(self, nodes: List[NFA], children: List[Symbol]) -> NFA:
-        raise NotImplementedError()
-
-    def _handler_4(self, nodes: List[NFA], children: List[Symbol]) -> NFA:
-        raise NotImplementedError()
-
-    def _handler_5(self, nodes: List[NFA], children: List[Symbol]) -> NFA:
-        raise NotImplementedError()
-
-    def _handler_6(self, nodes: List[NFA], children: List[Symbol]) -> NFA:
-        raise NotImplementedError()
-
-    def _handler_7(self, nodes: List[NFA], children: List[Symbol]) -> NFA:
-        raise NotImplementedError()
-
-    def _handler_8(self, nodes: List[NFA], children: List[Symbol]) -> NFA:
-        raise NotImplementedError()
-
-    def _handler_9(self, nodes: List[NFA], children: List[Symbol]) -> NFA:
-        raise NotImplementedError()
-
-    def _handler_10(self, nodes: List[NFA], children: List[Symbol]) -> NFA:
-        raise NotImplementedError()
-
-    def _handler_11(self, nodes: List[NFA], children: List[Symbol]) -> NFA:
-        raise NotImplementedError()
-
-    def _handler_12(self, nodes: List[NFA], children: List[Symbol]) -> NFA:
-        raise NotImplementedError()
-
-    def _handler_13(self, nodes: List[NFA], children: List[Symbol]) -> NFA:
-        raise NotImplementedError()
-
-    def _handler_14(self, nodes: List[NFA], children: List[Symbol]) -> NFA:
-        raise NotImplementedError()
+        self.handler = None
 
 
 class RegexEngine:
     TERMINALS = {'|', '(', ')', '*', '+', '[', ']', '-', 'char', '^', '.'}
-    NONTERMINALS = {'E', 'T', 'F', 'Fs', 'Fxs'}
+    NONTERMINALS = {'E', 'T', 'F', 'P', 'Px'}
     START_SYMBOL_NAME = 'E'
-    RULES = [
-        'E -> E | T',
-        'E -> T',
-        'T -> T F',
-        'T -> F',
-        'F -> ( E )',
-        'F -> F *',
-        'F -> F +',
-        'F -> Fs',
-        'Fs -> .',
-        'Fs -> char',
-        'Fs -> char - char',
-        'Fxs -> Fxs Fs',
-        'Fxs -> Fs',
-        'F -> [ Fxs ]',
-        'F -> [ ^ Fxs ]',
-    ]
 
     def __init__(self):
         self._grammar = Grammar({
@@ -157,8 +67,89 @@ class RegexEngine:
             'nonterminal_symbols': self.NONTERMINALS,
             'start_symbol': self.START_SYMBOL_NAME,
         })
-        rules = [RegexProductionRule.from_string(rule, self._grammar.symbol_pool) for rule in self.RULES]
+        self.handlers = {
+            'E -> E | T': self._handler_0,
+            'E -> T': self._handler_1,
+            'T -> T F': self._handler_2,
+            'T -> F': self._handler_3,
+            'F -> ( E )': self._handler_4,
+            'F -> F *': self._handler_5,
+            'F -> F +': self._handler_6,
+            'F -> Fs': self._handler_7,
+            'P -> .': self._handler_8,
+            'P -> char': self._handler_9,
+            'P -> char - char': self._handler_10,
+            'Px -> Px P': self._handler_11,
+            'Px -> P': self._handler_12,
+            'F -> [ Px ]': self._handler_13,
+            'F -> [ ^ Px ]': self._handler_14,
+        }
+        rules = []
+        for rule_str, handler in self.handlers.items():
+            rule = RegexProductionRule.from_string(rule_str, self._grammar.symbol_pool)
+            rule.handler = handler
+            rules.append(rule)
         self._grammar.init(rules)
+
+    @staticmethod
+    def _handler_0(nodes: List[NFA], children: List[Symbol]) -> NFA:
+        raise NotImplementedError()
+
+    @staticmethod
+    def _handler_1(nodes: List[NFA], children: List[Symbol]) -> NFA:
+        raise NotImplementedError()
+
+    @staticmethod
+    def _handler_2(nodes: List[NFA], children: List[Symbol]) -> NFA:
+        raise NotImplementedError()
+
+    @staticmethod
+    def _handler_3(nodes: List[NFA], children: List[Symbol]) -> NFA:
+        raise NotImplementedError()
+
+    @staticmethod
+    def _handler_4(nodes: List[NFA], children: List[Symbol]) -> NFA:
+        raise NotImplementedError()
+
+    @staticmethod
+    def _handler_5(nodes: List[NFA], children: List[Symbol]) -> NFA:
+        raise NotImplementedError()
+
+    @staticmethod
+    def _handler_6(nodes: List[NFA], children: List[Symbol]) -> NFA:
+        raise NotImplementedError()
+
+    @staticmethod
+    def _handler_7(nodes: List[NFA], children: List[Symbol]) -> NFA:
+        raise NotImplementedError()
+
+    @staticmethod
+    def _handler_8(nodes: List[NFA], children: List[Symbol]) -> NFA:
+        raise NotImplementedError()
+
+    @staticmethod
+    def _handler_9(nodes: List[NFA], children: List[Symbol]) -> NFA:
+        raise NotImplementedError()
+
+    @staticmethod
+    def _handler_10(nodes: List[NFA], children: List[Symbol]) -> NFA:
+        raise NotImplementedError()
+
+    @staticmethod
+    def _handler_11(nodes: List[NFA], children: List[Symbol]) -> NFA:
+        raise NotImplementedError()
+
+    @staticmethod
+    def _handler_12(nodes: List[NFA], children: List[Symbol]) -> NFA:
+        raise NotImplementedError()
+
+    @staticmethod
+    def _handler_13(nodes: List[NFA], children: List[Symbol]) -> NFA:
+        raise NotImplementedError()
+
+    @staticmethod
+    def _handler_14(nodes: List[NFA], children: List[Symbol]) -> NFA:
+        raise NotImplementedError()
 
     def parse(self, regex: Regex) -> NFA:
         parse_table = self._grammar.parse_table
