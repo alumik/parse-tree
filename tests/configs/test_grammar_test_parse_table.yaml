@@ -1,15 +1,12 @@
 nonterminal_symbols:
-  # ? name
   ? S
   ? C
 terminal_symbols:
-  # name: regex
   c: c
   d: d
 ignored_symbols:
 start_symbol: S
 production_rules:
-  # - left part -> right part
   - S -> C C
   - C -> c C
   - C -> d
