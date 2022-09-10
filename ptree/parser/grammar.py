@@ -138,22 +138,22 @@ class Transition:
     TYPE_SHIFT = 1
     TYPE_REDUCE = 2
 
-    def __init__(self, source: int, target: Union[int, ProductionRule], on: AbstractSymbol, transition_type: int):
+    def __init__(self, source: int, target: Union[int, ProductionRule], symbol: AbstractSymbol, transition_type: int):
         self.source = source
         self.target = target
-        self.on = on
+        self.symbol = symbol
         self.type = transition_type
 
     def __eq__(self, other: 'Transition') -> bool:
         if isinstance(other, Transition):
             return self.source == other.source and \
                    self.target == other.target and \
-                   self.on == other.on and \
+                   self.symbol == other.symbol and \
                    self.type == other.type
         return False
 
     def __hash__(self) -> int:
-        return hash((self.source, self.target, self.on, self.type))
+        return hash((self.source, self.target, self.symbol, self.type))
 
     def __str__(self) -> str:
         type_desc = {
@@ -161,7 +161,7 @@ class Transition:
             Transition.TYPE_SHIFT: 'shift',
             Transition.TYPE_REDUCE: 'reduce',
         }
-        return f'{type_desc[self.type]}: {{{self.source}}} -> {{{self.target}}} on {self.on}'
+        return f'{type_desc[self.type]}: {{{self.source}}} -> {{{self.target}}} on {self.symbol}'
 
     def __repr__(self) -> str:
         return f'Transition({self.__str__()})'
@@ -249,7 +249,7 @@ class ParseTable:
                     if transition.type == Transition.TYPE_SHIFT:
                         row.append(f's{transition.target}')
                     elif transition.type == Transition.TYPE_REDUCE:
-                        row.append(f'r{transition.target.id}')
+                        row.append('acc' if state == self.accept_state else f'r{transition.target.id}')
                     else:
                         row.append(f'{transition.target}')
                 else:
