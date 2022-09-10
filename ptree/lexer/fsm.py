@@ -20,7 +20,8 @@ class FSMState:
     def get_targets(self, on: str):
         return self.transitions.get(on, set())
 
-    def dfs(self, visited: Optional[List['FSMState']] = None):
+    def dfs(self, visited: Optional[List['FSMState']] = None, action: Callable[['FSMState'], None] = lambda _: None):
+        action(self)
         if visited is None:
             visited = []
         visited.append(self)
@@ -36,23 +37,24 @@ class FSMState:
 
 class NFA:
     EPSILON = '\0'
+    CHARSET = set(chr(i + 1) for i in range(128)) - {'\r', '\n'}
 
-    def __init__(self, accept_list: Optional[List[str]] = None, start: Optional[FSMState] = None):
-        self.accept_list = accept_list or []
+    def __init__(self, start: Optional[FSMState] = None, end: Optional[Set[FSMState]] = None):
         self.start = start
+        self.end = end or set()
         if self.start is None:
             self.start = FSMState()
-            self.start.accept_list = self.accept_list
+            self.end.add(self.start)
 
     @classmethod
     def union(cls, others: List['NFA']) -> 'NFA':
         start = FSMState()
         for nfa in others:
             start.add_transition(NFA.EPSILON, nfa.start)
-        return cls(list(set().union(*[nfa.accept_list for nfa in others])), start)
+        return cls(start)
 
     def to_dfa(self):
-        return DFA(self.accept_list, self.start)
+        return DFA(self.start)
 
     def render(self,
                directory: Union[pathlib.Path, str] = '',
@@ -96,12 +98,11 @@ class NFA:
 
 class DFA(NFA):
 
-    def __init__(self, accept_list: Optional[List[str]] = None, start: Optional[FSMState] = None):
-        super().__init__(accept_list, start)
+    def __init__(self, start: Optional[FSMState] = None):
+        super().__init__(start)
         start_closure = self._get_closure({start})
         self.start = FSMState()
         self.start.accept_list = list({accept for nfa_state in start_closure for accept in nfa_state.accept_list})
-        self.start.sort_accept_list_by(self.accept_list)
         state_map = {frozenset(start_closure): self.start}
         state_queue = [start_closure]
         while state_queue:
@@ -116,7 +117,6 @@ class DFA(NFA):
                     target_state = FSMState()
                     target_state.accept_list = list(
                         {accept for nfa_state in target_closure for accept in nfa_state.accept_list})
-                    target_state.sort_accept_list_by(self.accept_list)
                     state_map[frozenset(target_closure)] = target_state
                     state_queue.append(target_closure)
                 else:
@@ -137,7 +137,7 @@ class DFA(NFA):
     @classmethod
     def union(cls, others: List['DFA']) -> 'DFA':
         nfa = super().union(others)
-        return DFA(nfa.accept_list, nfa.start)
+        return DFA(nfa.start)
 
     def to_dfa(self):
         return self

@@ -137,6 +137,7 @@ class Transition:
     TYPE_GOTO = 0
     TYPE_SHIFT = 1
     TYPE_REDUCE = 2
+    TYPE_ACCEPT = 3
 
     def __init__(self, source: int, target: Union[int, ProductionRule], symbol: AbstractSymbol, transition_type: int):
         self.source = source
@@ -160,6 +161,7 @@ class Transition:
             Transition.TYPE_GOTO: 'goto',
             Transition.TYPE_SHIFT: 'shift',
             Transition.TYPE_REDUCE: 'reduce',
+            Transition.TYPE_ACCEPT: 'accept',
         }
         return f'{type_desc[self.type]}: {{{self.source}}} -> {{{self.target}}} on {self.symbol}'
 
@@ -177,7 +179,6 @@ class ParseTable:
         self._symbol_pool = symbol_pool
         self._start_symbol = start_symbol
         self.transitions = {}
-        self.accept_state = None
 
         state_list = []
         start_state = ParseState(self._symbol_pool)
@@ -192,15 +193,16 @@ class ParseTable:
             state = state_list.pop(0)
             for item in state.items:
                 if item.is_end():
+                    transition_type = Transition.TYPE_REDUCE
+                    if item.rule.left == self._start_symbol and item.lookahead == self._symbol_pool.get_terminal(
+                            Grammar.END_SYMBOL_NAME):
+                        transition_type = Transition.TYPE_ACCEPT
                     self.transitions.setdefault(self.states[state], {})[item.lookahead] = Transition(
                         self.states[state],
                         item.rule,
                         item.lookahead,
-                        Transition.TYPE_REDUCE,
+                        transition_type,
                     )
-                    if item.rule.left == self._start_symbol and item.lookahead == self._symbol_pool.get_terminal(
-                            Grammar.END_SYMBOL_NAME):
-                        self.accept_state = state
                 else:
                     symbol = item.next()
                     new_state = ParseState(self._symbol_pool)
@@ -226,8 +228,8 @@ class ParseTable:
 
     def __str__(self) -> str:
         from dashtable import data2rst
-        terminals = list(self._config['terminal_symbols'].keys())
-        nonterminals = list(self._config['nonterminal_symbols'].keys())
+        terminals = list(self._config['terminal_symbols'])
+        nonterminals = list(self._config['nonterminal_symbols'])
         terminals.append(Grammar.END_SYMBOL_NAME)
         table = [
             [
@@ -249,7 +251,9 @@ class ParseTable:
                     if transition.type == Transition.TYPE_SHIFT:
                         row.append(f's{transition.target}')
                     elif transition.type == Transition.TYPE_REDUCE:
-                        row.append('acc' if state == self.accept_state else f'r{transition.target.id}')
+                        row.append(f'r{transition.target.id}')
+                    elif transition.type == Transition.TYPE_ACCEPT:
+                        row.append('acc')
                     else:
                         row.append(f'{transition.target}')
                 else:
