@@ -1,0 +1,13 @@
+nonterminal_symbols:
+  ? S
+terminal_symbols:
+  AB2: ab
+  ABC: abc
+  A: a
+  AB1: ab
+  WS: ' '
+ignored_symbols:
+  ? A
+  ? WS
+start_symbol: S
+production_rules:

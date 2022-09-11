@@ -14,13 +14,15 @@ class FSMState:
     def add_transition(self, on: str, target: 'FSMState'):
         self.transitions.setdefault(on, set()).add(target)
 
-    def get_one_target(self, on: str):
+    def get_one_target(self, on: str) -> Optional['FSMState']:
         return next(iter(self.get_targets(on)), None)
 
-    def get_targets(self, on: str):
+    def get_targets(self, on: str) -> Set['FSMState']:
         return self.transitions.get(on, set())
 
-    def dfs(self, visited: Optional[List['FSMState']] = None, action: Callable[['FSMState'], None] = lambda _: None):
+    def dfs(self,
+            visited: Optional[List['FSMState']] = None,
+            action: Callable[['FSMState'], None] = lambda _: None) -> List['FSMState']:
         action(self)
         if visited is None:
             visited = []
@@ -28,11 +30,8 @@ class FSMState:
         for targets in self.transitions.values():
             for target in targets:
                 if target not in visited:
-                    target.dfs(visited)
+                    target.dfs(visited, action)
         return visited
-
-    def sort_accept_list_by(self, other: List[str]):
-        self.accept_list.sort(key=lambda x: other.index(x))
 
 
 class NFA:
@@ -53,7 +52,7 @@ class NFA:
             start.add_transition(NFA.EPSILON, nfa.start)
         return cls(start)
 
-    def to_dfa(self):
+    def to_dfa(self) -> 'DFA':
         return DFA(self.start)
 
     def render(self,
@@ -139,7 +138,7 @@ class DFA(NFA):
         nfa = super().union(others)
         return DFA(nfa.start)
 
-    def to_dfa(self):
+    def to_dfa(self) -> 'DFA':
         return self
 
     def match(self, text: str) -> Optional[Tuple[str, int]]:
