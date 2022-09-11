@@ -26,6 +26,7 @@ Take the regular expression `(a|b)*abb` for example.
    
     ```python
     from ptree.lexer.regex import Regex, RegexEngine
+
     regex = Regex(name='(a|b)*abb', pattern='(a|b)*abb')
     engine = RegexEngine()
     nfa = engine.parse(regex)
@@ -51,6 +52,7 @@ Take the regular expressions `a*b+`, `a`, `abb` for example.
 
     ```python
     from ptree.lexer.regex import Regex, RegexEngine
+
     regexes = [
         Regex(name='a*b+', pattern='a*b+'),
         Regex(name='a', pattern='a'),
@@ -72,7 +74,8 @@ Take the regular expressions `a*b+`, `a`, `abb` for example.
 
     ```python
     from ptree.lexer.nfa import NFA
-    nfa = NFA.merge(nfas)
+
+    nfa = NFA.union(nfas)
     nfa.render(directory='out', name='nfa', output_format='svg')
     ```
    
