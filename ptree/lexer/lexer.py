@@ -1,8 +1,8 @@
 from typing import *
 
+from ptree.symbol.symbol import Symbol
 from ptree.lexer.fsm import NFA
 from ptree.lexer.regex import Regex, RegexEngine
-from ptree.symbol.symbol import Symbol
 from ptree.parser.grammar import SymbolPool
 
 
@@ -11,8 +11,8 @@ class Lexer:
     def __init__(self, config: Dict[str, Any], symbol_pool: SymbolPool):
         self._config = config
         self._symbol_pool = symbol_pool
-        self._symbol_names_and_patterns = self._config['terminal_symbols']
-        self._ignored_symbols = self._config['ignored_symbols']
+        self._symbol_names_and_patterns = self._config['terminal_symbols'] or {}
+        self._ignored_symbols = self._config['ignored_symbols'] or []
         regex_engine = RegexEngine()
         nfa_list = [
             regex_engine.parse(Regex(name, pattern)) for name, pattern in self._symbol_names_and_patterns.items()

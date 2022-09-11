@@ -1,13 +1,23 @@
+import fire
+
 import ptree
 
 
-def main():
-    config = ptree.load_config('config.yaml')
-    parser = ptree.Parser(config)
-    lexer = ptree.Lexer(config, parser=parser)
-    parse_tree = parser.parse(lexer.tokenize(input()))
-    ptree.plot(parse_tree, save_path='parse_tree.png')
+def main(config: str = 'config.yaml', text: str = 'abababab'):
+    config = ptree.load_config(config)
+    grammar = ptree.Grammar(config)
+    lexer = ptree.Lexer(config, symbol_pool=grammar.symbol_pool)
+    parser = ptree.Parser(grammar)
+    print('parse table:')
+    print(grammar.parse_table)
+
+    tokens = lexer.tokenize(text)
+    print('tokens:')
+    ptree.pretty_print_tokens(tokens)
+
+    parse_tree = parser.parse(tokens)
+    parse_tree.render(directory='out', name='parse-tree', output_format='svg')
 
 
 if __name__ == '__main__':
-    main()
+    fire.Fire(main)

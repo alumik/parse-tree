@@ -35,10 +35,10 @@ class TestFSM(unittest.TestCase):
 
         s10.accept_list = ['(a|b)*abb']
         nfa = NFA(s0)
-        nfa.render(directory='out', name='test_nfa_to_nfa_nfa', output_format='svg')
+        nfa.render(directory='out', name='test-nfa-to-dfa-nfa', output_format='svg')
 
         dfa = nfa.to_dfa()
-        dfa.render(directory='out', name='test_nfa_to_nfa_dfa', output_format='svg')
+        dfa.render(directory='out', name='test-nfa-to-dfa-dfa', output_format='svg')
 
         self.assertEqual(None, dfa.match('abdsffgabb'))
         self.assertEqual(None, dfa.match('abab'))
@@ -74,10 +74,10 @@ class TestFSM(unittest.TestCase):
         nfa2 = NFA(s4)
 
         nfa = NFA.union([nfa0, nfa1, nfa2])
-        nfa.render(directory='out', name='test_merge_fsm_nfa', output_format='svg')
+        nfa.render(directory='out', name='test-merge-fsm-nfa', output_format='svg')
 
         dfa = nfa.to_dfa()
-        dfa.render(directory='out', name='test_merge_fsm_dfa', output_format='svg')
+        dfa.render(directory='out', name='test-merge-fsm-dfa', output_format='svg')
 
         self.assertIn(dfa.match('abb'), [('a*b+', 3), ('abb', 3)])
         self.assertEqual(('a*b+', 4), dfa.match('abbb'))
@@ -89,9 +89,9 @@ class TestFSM(unittest.TestCase):
         regex = Regex(pattern, pattern)
         engine = RegexEngine()
         nfa = engine.parse(regex)
-        nfa.render(directory='out', name='test_parse_regex_nfa', output_format='svg')
+        nfa.render(directory='out', name='test-parse-regex-nfa', output_format='svg')
         dfa = nfa.to_dfa()
-        dfa.render(directory='out', name='test_parse_regex_dfa', output_format='svg')
+        dfa.render(directory='out', name='test-parse-regex-dfa', output_format='svg')
         self.assertEqual(('a+[bcd]ef*[g-j]k+', 5), dfa.match('acehkd'))
 
 

@@ -1,0 +1,36 @@
+nonterminal_symbols:
+  ? S
+terminal_symbols:
+  COMMENT: '(//[^\n]*)|(/\*([^\*]|(\*)*[^\*/])*(\*)*\*/)'
+  KEYWORD: 'auto|short|int|long|float|double|char|struct|union|enum|typedef|const|unsigned|signed|extern|register|static|volatile|void|if|else|switch|case|for|do|while|goto|continue|break|default|sizeof|return|using|namespace'
+  IDENTIFIER: '[A-Za-z_][A-Za-z0-9_]*'
+  INTEGER: '[0-9]+'
+  FLOAT: '[0-9]+\.[0-9]+'
+  COMPARISON: '==|>|<|>=|<=|!='
+  LSTREAM: '<<'
+  RSTREAM: '>>'
+  LP: '\('
+  RP: '\)'
+  LB: '{'
+  RB: '}'
+  COMMA: ','
+  SEMICOLON: ';'
+  LSB: '\['
+  RSB: '\]'
+  ASSIGN_OP: '='
+  ADD_OP: '\+'
+  SUB_OP: '\-'
+  MULT_OP: '\*'
+  DIV_OP: '/'
+  MOD_OP: '%'
+  POWER_OP: '\^'
+  AND_OP: '&&'
+  OR_OP: '\|\|'
+  NOT_OP: '!'
+  SPACE: '[ \t\n\r]+'
+ignored_symbols:
+  ? SPACE
+  ? COMMENT
+start_symbol: S
+production_rules:
+  - S -> INTEGER

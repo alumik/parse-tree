@@ -8,7 +8,7 @@ from ptree.parser.grammar import Grammar
 class TestGrammar(unittest.TestCase):
 
     def test_first_set(self):
-        config = ptree.load_config('configs/test_grammar_test_first_set.yaml')
+        config = ptree.load_config('configs/test-grammar-test-first-set.yaml')
         grammar = Grammar(config)
         grammar.init()
         symbol_pool = grammar.symbol_pool
@@ -33,7 +33,7 @@ class TestGrammar(unittest.TestCase):
             self.assertEqual(symbol.first, first_set[symbol.name])
 
     def test_parse_table(self):
-        config = ptree.load_config('configs/test_grammar_test_parse_table.yaml')
+        config = ptree.load_config('configs/test-grammar-test-parse-table.yaml')
         grammar = Grammar(config)
         grammar.init()
         print(grammar.parse_table)

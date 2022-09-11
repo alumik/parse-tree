@@ -1,0 +1,22 @@
+nonterminal_symbols:
+  # ? name
+  ? A
+  ? B
+  ? C
+  ? D
+  ? S
+terminal_symbols:
+  # name: regex
+  α: a
+  β: b
+ignored_symbols:
+start_symbol: S
+production_rules:
+  # - left part -> right part
+  - S -> C β B A
+  - A -> A α β
+  - A -> α β
+  - B -> C
+  - B -> D β
+  - C -> α
+  - D -> α
