@@ -62,16 +62,19 @@ class TestFSM(unittest.TestCase):
         s1.add_transition('b', s1)
         s1.accept_list = ['a*b+']
         nfa0 = NFA(s0)
+        nfa0.render(directory='out', name='test-merge-fsm-nfa0', output_format='svg')
 
         s2.add_transition('a', s3)
         s3.accept_list = ['a']
         nfa1 = NFA(s2)
+        nfa1.render(directory='out', name='test-merge-fsm-nfa1', output_format='svg')
 
         s4.add_transition('a', s5)
         s5.add_transition('b', s6)
         s6.add_transition('b', s7)
         s7.accept_list = ['abb']
         nfa2 = NFA(s4)
+        nfa2.render(directory='out', name='test-merge-fsm-nfa2', output_format='svg')
 
         nfa = NFA.union([nfa0, nfa1, nfa2])
         nfa.render(directory='out', name='test-merge-fsm-nfa', output_format='svg')

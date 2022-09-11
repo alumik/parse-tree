@@ -8,6 +8,7 @@ class TestParser(unittest.TestCase):
     def test_equation(self):
         config = ptree.load_config('configs/test-parser-test-equation.yaml')
         grammar = ptree.Grammar(config)
+        grammar.init()
         lexer = ptree.Lexer(config, symbol_pool=grammar.symbol_pool)
         parser = ptree.Parser(grammar)
         tokens = lexer.tokenize('3*(6+(4/2)-5)+8')

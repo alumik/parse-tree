@@ -6,6 +6,7 @@ import ptree
 def main(config: str = 'config.yaml', text: str = 'abababab'):
     config = ptree.load_config(config)
     grammar = ptree.Grammar(config)
+    grammar.init()
     lexer = ptree.Lexer(config, symbol_pool=grammar.symbol_pool)
     parser = ptree.Parser(grammar)
     print('parse table:')

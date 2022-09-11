@@ -46,7 +46,6 @@ class Parser:
 
     def __init__(self, grammar: Grammar):
         self._grammar = grammar
-        self._grammar.init()
 
     def parse(self, tokens: List[Symbol]) -> ParseTree:
         parse_table = self._grammar.parse_table
