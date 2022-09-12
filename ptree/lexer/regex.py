@@ -258,6 +258,11 @@ class RegexEngine:
                 i -= 1
                 tokens[i] = token_stack[-1]
             else:
+                rule = transition.target
+                right_length = len(rule.right)
+                children = token_stack[-right_length:]
+                nodes, node_stack = node_stack[-right_length:], node_stack[:-right_length]
+                node_stack.append(rule.handler(nodes, children))
                 break
         dfa = node_stack[0]
         for state in dfa.end:

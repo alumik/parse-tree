@@ -58,8 +58,7 @@ class NFA:
     def render(self,
                directory: Union[pathlib.Path, str] = '',
                name: str = 'out',
-               output_format: str = 'svg',
-               view: bool = False):
+               output_format: str = 'svg'):
         import graphviz
         dot = graphviz.Digraph(format=output_format, graph_attr={'rankdir': 'LR'})
         states = self.start.dfs()
@@ -92,7 +91,7 @@ class NFA:
                     )
         dot.node('0', shape='point')
         dot.edge('0', str(state_id_map[self.start]), label='start')
-        dot.render(str(pathlib.Path(directory) / name), view=view)
+        dot.render(str(pathlib.Path(directory) / name))
 
 
 class DFA(NFA):

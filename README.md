@@ -6,13 +6,13 @@
 
 ## Demo
 
-Modify `config.yaml` if necessary and then execute:
+Modify the config file if necessary and then execute:
 
 ```
-python main.py --config=config.yaml --text=<text>
+python demo.py --config=<config> --text=<text>
 ```
 
-The image of the output parse tree will be saved in `out/parse-tree.svg`. (This behavior can be changed in `main.py`.)
+The image of the output parse tree will be saved in `out/parse-tree.svg`. (This behavior can be changed in `demo.py`.)
 
 ## Examples
 

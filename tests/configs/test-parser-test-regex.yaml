@@ -1,0 +1,36 @@
+nonterminal_symbols:
+  ? E
+  ? T
+  ? F
+  ? P
+  ? Px
+terminal_symbols:
+  '|': '\|'
+  '(': '\('
+  ')': '\)'
+  '*': '\*'
+  '+': '\+'
+  '[': '\['
+  ']': '\]'
+  '-': '\-'
+  'char': '[a-zA-Z0-9]'
+  '^': '\^'
+  '.': '\.'
+ignored_symbols:
+start_symbol: E
+production_rules:
+  - E -> E | T
+  - E -> T
+  - T -> T F
+  - T -> F
+  - F -> ( E )
+  - F -> F *
+  - F -> F +
+  - F -> P
+  - P -> .
+  - P -> char
+  - P -> char - char
+  - Px -> Px P
+  - Px -> P
+  - F -> [ Px ]
+  - F -> [ ^ Px ]
