@@ -1,4 +1,4 @@
-class AbstractSymbol:
+class Symbol:
     TYPE_TERMINAL = 0
     TYPE_NONTERMINAL = 1
 
@@ -10,22 +10,22 @@ class AbstractSymbol:
     def type(self) -> int:
         raise NotImplementedError()
 
-    def __eq__(self, other: 'AbstractSymbol') -> bool:
-        if isinstance(other, AbstractSymbol):
+    def __eq__(self, other: 'Symbol') -> bool:
+        if isinstance(other, Symbol):
             return self.name == other.name and self.type == other.type
         return False
 
     def __hash__(self) -> int:
-        return hash(self.name)
+        return hash((self.name, self.type))
 
     def __str__(self) -> str:
         return self.name
 
     def __repr__(self) -> str:
-        return f'AbstractSymbol({self.name})'
+        return f'Symbol({str(self)})'
 
 
-class AbstractTerminal(AbstractSymbol):
+class Terminal(Symbol):
 
     def __init__(self, name: str):
         super().__init__(name)
@@ -33,13 +33,13 @@ class AbstractTerminal(AbstractSymbol):
 
     @property
     def type(self) -> int:
-        return AbstractSymbol.TYPE_TERMINAL
+        return Symbol.TYPE_TERMINAL
 
     def __repr__(self) -> str:
-        return f'AbstractTerminal({self.name})'
+        return f'Terminal({str(self)})'
 
 
-class AbstractNonterminal(AbstractSymbol):
+class Nonterminal(Symbol):
 
     def __init__(self, name: str):
         super().__init__(name)
@@ -48,28 +48,28 @@ class AbstractNonterminal(AbstractSymbol):
 
     @property
     def type(self) -> int:
-        return AbstractSymbol.TYPE_NONTERMINAL
+        return Symbol.TYPE_NONTERMINAL
 
     def __repr__(self) -> str:
-        return f'AbstractNonterminal({self.name}, nullable={self.nullable})'
+        return f'Nonterminal({str(self)}, nullable={self.nullable})'
 
 
-class Symbol:
+class Token:
 
-    def __init__(self, value: str, abstract: AbstractSymbol):
+    def __init__(self, value: str, symbol: Symbol):
         self.value = value
-        self.abstract = abstract
+        self.symbol = symbol
 
-    def __eq__(self, other: 'Symbol') -> bool:
-        if isinstance(other, Symbol):
-            return self.value == other.value and self.abstract == other.abstract
+    def __eq__(self, other: 'Token') -> bool:
+        if isinstance(other, Token):
+            return self.value == other.value and self.symbol == other.symbol
         return False
 
     def __hash__(self) -> int:
-        return hash((self.value, self.abstract))
+        return hash((self.value, self.symbol))
 
     def __str__(self) -> str:
         return self.value
 
     def __repr__(self) -> str:
-        return f'Symbol({self.value}, abstract={repr(self.abstract)})'
+        return f'Token({str(self)}, symbol={repr(self.symbol)})'

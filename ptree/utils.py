@@ -2,7 +2,7 @@ import yaml
 
 from typing import *
 
-from ptree.symbol.symbol import Symbol
+from ptree.symbol.symbol import Token
 
 
 def load_config(path: str) -> Dict[str, Any]:
@@ -20,9 +20,9 @@ def escaper(s: str) -> str:
         .replace('\f', '\\\\f')
 
 
-def pretty_print_tokens(tokens: List[Symbol]):
+def pretty_print_tokens(tokens: List[Token]):
     from dashtable import data2rst
     table = [['', 'SYMBOL', 'VALUE']]
     for i, token in enumerate(tokens):
-        table.append([str(i + 1), token.abstract.name, token.value])
+        table.append([str(i + 1), token.symbol.name, token.value])
     print(data2rst(table))

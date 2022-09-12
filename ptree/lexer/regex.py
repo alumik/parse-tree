@@ -1,9 +1,9 @@
 from typing import *
 
-from ptree.symbol.symbol import AbstractSymbol, AbstractNonterminal, Symbol
+from ptree.symbol.symbol import Symbol, Nonterminal, Token
 from ptree.symbol.pool import SymbolPool
 from ptree.lexer.fsm import FSMState, NFA
-from ptree.parser.grammar import Grammar, ProductionRule, Transition
+from ptree.parser.grammar import ProductionRule, Transition, Grammar
 
 
 class Regex:
@@ -12,8 +12,8 @@ class Regex:
         self.name = name
         self.pattern = pattern
 
-    def get_symbols(self, symbol_pool: SymbolPool) -> List[Symbol]:
-        symbols = []
+    def get_tokens(self, symbol_pool: SymbolPool) -> List[Token]:
+        tokens = []
         char_symbol = symbol_pool.get_terminal('char')
         i = 0
         while i < len(self.pattern):
@@ -24,36 +24,29 @@ class Regex:
                         raise ValueError(f'invalid regex: {self.pattern}')
                     match c_ := self.pattern[i]:
                         case '-' | '+' | '*' | '|' | '[' | ']' | '(' | '^' | '.' | ')':
-                            symbols.append(Symbol(c_, char_symbol))
+                            tokens.append(Token(c_, char_symbol))
                         case 'r':
-                            symbols.append(Symbol('\r', char_symbol))
+                            tokens.append(Token('\r', char_symbol))
                         case 'n':
-                            symbols.append(Symbol('\n', char_symbol))
+                            tokens.append(Token('\n', char_symbol))
                         case 't':
-                            symbols.append(Symbol('\t', char_symbol))
+                            tokens.append(Token('\t', char_symbol))
                         case 'f':
-                            symbols.append(Symbol('\f', char_symbol))
+                            tokens.append(Token('\f', char_symbol))
                         case '\\':
-                            symbols.append(Symbol('\\', char_symbol))
+                            tokens.append(Token('\\', char_symbol))
                 case '-' | '+' | '*' | '|' | '[' | ']' | '(' | '^' | '.' | ')':
-                    symbols.append(Symbol(c, symbol_pool.get_terminal(c)))
+                    tokens.append(Token(c, symbol_pool.get_terminal(c)))
                 case _:
-                    symbols.append(Symbol(c, char_symbol))
+                    tokens.append(Token(c, char_symbol))
             i += 1
-        return symbols
+        return tokens
 
     def __str__(self):
         return f'{self.name} -> {self.pattern}'
 
     def __repr__(self):
-        return f'Regex({self.__str__()})'
-
-
-class RegexProductionRule(ProductionRule):
-
-    def __init__(self, left: AbstractNonterminal, right: List[AbstractSymbol]):
-        super().__init__(left, right)
-        self.handler = None
+        return f'Regex({str(self)})'
 
 
 class RegexEngine:
@@ -86,7 +79,7 @@ class RegexEngine:
         }
         rules = []
         for rule_str, handler in self.handlers.items():
-            rule = RegexProductionRule.from_string(rule_str, self._grammar.symbol_pool)
+            rule = ProductionRule.from_string(rule_str, self._grammar.symbol_pool)
             rule.handler = handler
             rules.append(rule)
         self._grammar.init(rules)
@@ -177,7 +170,7 @@ class RegexEngine:
         return nfa
 
     @staticmethod
-    def _handler_7(nodes: List[NFA], children: List[Symbol]) -> NFA:
+    def _handler_7(nodes: List[NFA], children: List[Token]) -> NFA:
         """
         P -> char
         """
@@ -188,7 +181,7 @@ class RegexEngine:
         return nfa
 
     @staticmethod
-    def _handler_8(nodes: List[NFA], children: List[Symbol]) -> NFA:
+    def _handler_8(nodes: List[NFA], children: List[Token]) -> NFA:
         """
         P -> char - char
         """
@@ -229,26 +222,26 @@ class RegexEngine:
 
     def parse(self, regex: Regex) -> NFA:
         parse_table = self._grammar.parse_table
-        symbols = regex.get_symbols(self._grammar.symbol_pool)
+        tokens = regex.get_tokens(self._grammar.symbol_pool)
         state_stack = [0]
-        symbol_stack = []
+        token_stack = []
         node_stack = []
         i = 0
         while True:
             state = state_stack[-1]
-            if i < len(symbols):
-                symbol = symbols[i]
+            if i < len(tokens):
+                token = tokens[i]
             else:
-                symbol = Symbol(
-                    Grammar.END_SYMBOL_NAME,
-                    self._grammar.symbol_pool.get_terminal(Grammar.END_SYMBOL_NAME),
+                token = Token(
+                    value=Grammar.END_SYMBOL_NAME,
+                    symbol=self._grammar.symbol_pool.get_terminal(Grammar.END_SYMBOL_NAME),
                 )
-            transition = parse_table.transitions[state].get(symbol.abstract, None)
+            transition = parse_table.transitions[state].get(token.symbol, None)
             if transition is None:
                 raise ValueError(f'invalid regular expression {regex.pattern} for {regex.name}')
             if transition.type == Transition.TYPE_SHIFT:
                 node_stack.append(NFA())
-                symbol_stack.append(symbol)
+                token_stack.append(token)
                 state_stack.append(transition.target)
                 i += 1
             elif transition.type == Transition.TYPE_GOTO:
@@ -257,13 +250,13 @@ class RegexEngine:
             elif transition.type == Transition.TYPE_REDUCE:
                 rule = transition.target
                 right_length = len(rule.right)
-                children, symbol_stack = symbol_stack[-right_length:], symbol_stack[:-right_length]
+                children, token_stack = token_stack[-right_length:], token_stack[:-right_length]
                 nodes, node_stack = node_stack[-right_length:], node_stack[:-right_length]
                 state_stack = state_stack[:-right_length]
                 node_stack.append(rule.handler(nodes, children))
-                symbol_stack.append(Symbol(rule.left.name, rule.left))
+                token_stack.append(Token(rule.left.name, rule.left))
                 i -= 1
-                symbols[i] = symbol_stack[-1]
+                tokens[i] = token_stack[-1]
             else:
                 break
         dfa = node_stack[0]
