@@ -271,7 +271,10 @@ class Grammar:
         self._start_symbol = None
         self._rules = None
         self.parse_table = None
-        self.symbol_pool = SymbolPool(set(config['terminal_symbols']), set(config['nonterminal_symbols']))
+        self.symbol_pool = SymbolPool(
+            set(config['terminal_symbols'] or {}),
+            set(config['nonterminal_symbols'] or []),
+        )
 
     def init(self, rules: Optional[List[ProductionRule]] = None):
         self._start_symbol = self.symbol_pool.get_nonterminal(self._config['start_symbol'])

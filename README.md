@@ -1,7 +1,7 @@
 # LR(1) Parse Tree Generator
 
 ![Python-3.10](https://img.shields.io/badge/Python-3.10-blue)
-![version-0.1.3](https://img.shields.io/badge/version-0.1.3-blue)
+![version-0.1.4](https://img.shields.io/badge/version-0.1.4-blue)
 [![license-MIT](https://img.shields.io/badge/license-MIT-green)](https://github.com/AlumiK/parse-tree/blob/main/LICENSE)
 
 ## Demo
@@ -89,6 +89,120 @@ Take the regular expressions `a*b+`, `a`, `abb` for example.
     ```
 
     ![DFA](https://raw.githubusercontent.com/AlumiK/images/main/parse-tree/test-merge-fsm-dfa.svg)
+
+#### Tokenize a string
+
+The config file used in this example is:
+
+```yaml
+nonterminal_symbols:
+terminal_symbols:
+  COMMENT: '(//[^\n]*)|(/\*([^\*]|(\*)*[^\*/])*(\*)*\*/)'
+  KEYWORD: 'auto|short|int|long|float|double|char|struct|union|enum|typedef|const|unsigned|signed|extern|register|static|volatile|void|if|else|switch|case|for|do|while|goto|continue|break|default|sizeof|return|using|namespace'
+  IDENTIFIER: '[A-Za-z_][A-Za-z0-9_]*'
+  INTEGER: '[0-9]+'
+  FLOAT: '[0-9]+\.[0-9]+'
+  COMPARISON: '==|>|<|>=|<=|!='
+  LSTREAM: '<<'
+  RSTREAM: '>>'
+  LP: '\('
+  RP: '\)'
+  LB: '{'
+  RB: '}'
+  COMMA: ','
+  SEMICOLON: ';'
+  LSB: '\['
+  RSB: '\]'
+  ASSIGN_OP: '='
+  ADD_OP: '\+'
+  SUB_OP: '\-'
+  MULT_OP: '\*'
+  DIV_OP: '/'
+  MOD_OP: '%'
+  POWER_OP: '\^'
+  AND_OP: '&&'
+  OR_OP: '\|\|'
+  NOT_OP: '!'
+  SPACE: '[ \t\n\r]+'
+ignored_symbols:
+  ? SPACE
+  ? COMMENT
+start_symbol:
+production_rules:
+```
+
+The input string is:
+
+```cpp
+int main() {int a = a + 1; cout << a << endl; return 0;}
+```
+
+1. Create a lexer from the config file.
+
+    ```python
+    import ptree
+
+    config = ptree.load_config('config.yaml')
+    grammar = ptree.Grammar(config)
+    lexer = ptree.Lexer(config, symbol_pool=grammar.symbol_pool)
+    ```
+   
+2. Tokenize the input string.
+
+    ```python
+    tokens = lexer.tokenize('''int main() {int a = a + 1; cout << a << endl; return 0;}''')
+    ptree.pretty_print_tokens(tokens)
+    ```
+   
+    ```
+    +----+------------+--------+
+    |    | SYMBOL     | VALUE  |
+    +====+============+========+
+    | 1  | KEYWORD    | int    |
+    +----+------------+--------+
+    | 2  | IDENTIFIER | main   |
+    +----+------------+--------+
+    | 3  | LP         | (      |
+    +----+------------+--------+
+    | 4  | RP         | )      |
+    +----+------------+--------+
+    | 5  | LB         | {      |
+    +----+------------+--------+
+    | 6  | KEYWORD    | int    |
+    +----+------------+--------+
+    | 7  | IDENTIFIER | a      |
+    +----+------------+--------+
+    | 8  | ASSIGN_OP  | =      |
+    +----+------------+--------+
+    | 9  | IDENTIFIER | a      |
+    +----+------------+--------+
+    | 10 | ADD_OP     | +      |
+    +----+------------+--------+
+    | 11 | INTEGER    | 1      |
+    +----+------------+--------+
+    | 12 | SEMICOLON  | ;      |
+    +----+------------+--------+
+    | 13 | IDENTIFIER | cout   |
+    +----+------------+--------+
+    | 14 | LSTREAM    | <<     |
+    +----+------------+--------+
+    | 15 | IDENTIFIER | a      |
+    +----+------------+--------+
+    | 16 | LSTREAM    | <<     |
+    +----+------------+--------+
+    | 17 | IDENTIFIER | endl   |
+    +----+------------+--------+
+    | 18 | SEMICOLON  | ;      |
+    +----+------------+--------+
+    | 19 | KEYWORD    | return |
+    +----+------------+--------+
+    | 20 | INTEGER    | 0      |
+    +----+------------+--------+
+    | 21 | SEMICOLON  | ;      |
+    +----+------------+--------+
+    | 22 | RB         | }      |
+    +----+------------+--------+
+    ```
 
 ### Creating Parse Tree
 

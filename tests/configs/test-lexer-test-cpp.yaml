@@ -1,5 +1,4 @@
 nonterminal_symbols:
-  ? S
 terminal_symbols:
   COMMENT: '(//[^\n]*)|(/\*([^\*]|(\*)*[^\*/])*(\*)*\*/)'
   KEYWORD: 'auto|short|int|long|float|double|char|struct|union|enum|typedef|const|unsigned|signed|extern|register|static|volatile|void|if|else|switch|case|for|do|while|goto|continue|break|default|sizeof|return|using|namespace'
@@ -31,6 +30,5 @@ terminal_symbols:
 ignored_symbols:
   ? SPACE
   ? COMMENT
-start_symbol: S
+start_symbol:
 production_rules:
-  - S -> INTEGER
