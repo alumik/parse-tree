@@ -1,8 +1,4 @@
-import pathlib
-
 from typing import *
-
-from ptree.utils import escaper
 
 
 class FSMState:
@@ -54,44 +50,6 @@ class NFA:
 
     def to_dfa(self) -> 'DFA':
         return DFA(self.start)
-
-    def render(self,
-               directory: Union[pathlib.Path, str] = '',
-               name: str = 'out',
-               output_format: str = 'svg'):
-        import graphviz
-        dot = graphviz.Digraph(format=output_format, graph_attr={'rankdir': 'LR'})
-        states = self.start.dfs()
-        state_id_map = {state: i + 1 for i, state in enumerate(states)}
-        for state in states:
-            shape = 'circle'
-            if state.accept_list:
-                shape = 'doublecircle'
-                dot.node(
-                    f'accept list {state_id_map[state]}',
-                    label='\n'.join(state.accept_list),
-                    shape='rectangle',
-                    color='blue',
-                )
-                dot.edge(
-                    f'{state_id_map[state]}',
-                    f'accept list {state_id_map[state]}',
-                    style='dashed',
-                    color='blue',
-                    arrowhead='none',
-                )
-            dot.node(str(state_id_map[state]), shape=shape)
-        for state in states:
-            for on, targets in state.transitions.items():
-                for target in targets:
-                    dot.edge(
-                        str(state_id_map[state]),
-                        str(state_id_map[target]),
-                        label=escaper(on) if on != NFA.EPSILON else 'ε',
-                    )
-        dot.node('0', shape='point')
-        dot.edge('0', str(state_id_map[self.start]), label='start')
-        dot.render(str(pathlib.Path(directory) / name))
 
 
 class DFA(NFA):

@@ -1,7 +1,7 @@
 # LR(1) Parse Tree Generator
 
 ![Python-3.10](https://img.shields.io/badge/Python-3.10-blue)
-![version-0.1.4](https://img.shields.io/badge/version-0.1.4-blue)
+![version-0.2.0](https://img.shields.io/badge/version-0.2.0-blue)
 [![license-MIT](https://img.shields.io/badge/license-MIT-green)](https://github.com/AlumiK/parse-tree/blob/main/LICENSE)
 
 ## Demo
@@ -25,12 +25,14 @@ Take the regular expression `(a|b)*abb` for example.
 1. Create an NFA from the regular expression:
    
     ```python
+    import ptree
+
     from ptree.lexer.regex import Regex, RegexEngine
 
     regex = Regex(name='(a|b)*abb', pattern='(a|b)*abb')
     engine = RegexEngine()
     nfa = engine.parse(regex)
-    nfa.render(directory='out', name='nfa', output_format='svg')
+    ptree.render(nfa, directory='out', name='nfa', output_format='svg')
     ```
     
     ![NFA](https://raw.githubusercontent.com/AlumiK/images/main/parse-tree/test-nfa-to-dfa-nfa.svg)
@@ -39,7 +41,7 @@ Take the regular expression `(a|b)*abb` for example.
 
     ```python
     dfa = nfa.to_dfa()
-    dfa.render(directory='out', name='dfa', output_format='svg')
+    ptree.render(dfa, directory='out', name='dfa', output_format='svg')
     ```
 
     ![DFA](https://raw.githubusercontent.com/AlumiK/images/main/parse-tree/test-nfa-to-dfa-dfa.svg)
@@ -51,6 +53,8 @@ Take the regular expressions `a*b+`, `a`, `abb` for example.
 1. Create three NFAs from the regular expressions.
 
     ```python
+    import ptree
+
     from ptree.lexer.regex import Regex, RegexEngine
 
     regexes = [
@@ -61,7 +65,7 @@ Take the regular expressions `a*b+`, `a`, `abb` for example.
     engine = RegexEngine()
     nfas = [engine.parse(regex) for regex in regexes]
     for i, nfa in enumerate(nfas):
-        nfa.render(directory='out', name=f'nfa-{i}', output_format='svg')
+        ptree.render(nfa, directory='out', name=f'nfa-{i}', output_format='svg')
     ```
 
     ![NFA-1](https://raw.githubusercontent.com/AlumiK/images/main/parse-tree/test-merge-fsm-nfa0.svg)
@@ -76,7 +80,7 @@ Take the regular expressions `a*b+`, `a`, `abb` for example.
     from ptree.lexer.nfa import NFA
 
     nfa = NFA.union(nfas)
-    nfa.render(directory='out', name='nfa', output_format='svg')
+    ptree.render(nfa, directory='out', name='nfa', output_format='svg')
     ```
    
     ![NFA](https://raw.githubusercontent.com/AlumiK/images/main/parse-tree/test-merge-fsm-nfa.svg)
@@ -85,7 +89,7 @@ Take the regular expressions `a*b+`, `a`, `abb` for example.
 
     ```python
     dfa = nfa.to_dfa()
-    dfa.render(directory='out', name='dfa', output_format='svg')
+    ptree.render(dfa, directory='out', name='dfa', output_format='svg')
     ```
 
     ![DFA](https://raw.githubusercontent.com/AlumiK/images/main/parse-tree/test-merge-fsm-dfa.svg)
@@ -151,7 +155,7 @@ Take the regular expressions `a*b+`, `a`, `abb` for example.
 
     ```python
     tokens = lexer.tokenize('''int main() {int a = a + 1; cout << a << endl; return 0;}''')
-    ptree.pretty_print_tokens(tokens)
+    ptree.pprint(tokens)
     ```
    
     ```
@@ -245,7 +249,7 @@ Take the regular expressions `a*b+`, `a`, `abb` for example.
     grammar = ptree.Grammar(config)
     grammar.init()
     parser = ptree.Parser(grammar)
-    print(grammar.parse_table)
+    ptree.pprint(grammar.parse_table)
     ```
 
     ```
@@ -323,7 +327,7 @@ Take the regular expressions `a*b+`, `a`, `abb` for example.
     ```python
     lexer = ptree.Lexer(config, symbol_pool=grammar.symbol_pool)
     tokens = lexer.tokenize('3*(6+(4/2)-5)+8')
-    ptree.pretty_print_tokens(tokens)
+    ptree.pprint(tokens)
     ```
    
     ```
@@ -366,7 +370,7 @@ Take the regular expressions `a*b+`, `a`, `abb` for example.
 
     ```python
     parse_tree = parser.parse(tokens)
-    parse_tree.render(directory='out', name='parse-tree', output_format='svg')
+    ptree.render(parse_tree, directory='out', name='parse-tree', output_format='svg')
     ```
 
     ![Parse Tree](https://raw.githubusercontent.com/AlumiK/images/main/parse-tree/parse-tree-1.svg)
@@ -423,7 +427,7 @@ Take the regular expressions `a*b+`, `a`, `abb` for example.
     grammar = ptree.Grammar(config)
     grammar.init()
     parser = ptree.Parser(grammar)
-    print(grammar.parse_table)
+    ptree.pprint(grammar.parse_table)
     ```
    
     ```
@@ -471,7 +475,7 @@ Take the regular expressions `a*b+`, `a`, `abb` for example.
     ```python
     lexer = ptree.Lexer(config, symbol_pool=grammar.symbol_pool)
     tokens = lexer.tokenize('abababab')
-    ptree.pretty_print_tokens(tokens)
+    ptree.pprint(tokens)
     ```
    
     ![DFA](https://raw.githubusercontent.com/AlumiK/images/main/parse-tree/lexer-dfa.svg)
@@ -502,7 +506,7 @@ Take the regular expressions `a*b+`, `a`, `abb` for example.
 
     ```python
     parse_tree = parser.parse(tokens)
-    parse_tree.render(directory='out', name='parse-tree', output_format='svg')
+    ptree.render(parse_tree, directory='out', name='parse-tree', output_format='svg')
     ```
 
     ![Parse Tree](https://raw.githubusercontent.com/AlumiK/images/main/parse-tree/parse-tree-2.svg)

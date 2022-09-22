@@ -18,7 +18,8 @@ class TestParser(unittest.TestCase):
         parser = ptree.Parser(grammar)
         tokens = lexer.tokenize('3*(6+(4/2)-5)+8')
         parse_tree = parser.parse(tokens)
-        dot_source = parse_tree.render(
+        dot_source = ptree.render(
+            parse_tree,
             directory='out',
             name='test-parser-test-equation-parse-tree',
             output_format='svg',
@@ -145,7 +146,12 @@ class TestParser(unittest.TestCase):
         parser = ptree.Parser(grammar)
         tokens = lexer.tokenize('(a|b)*abb|ef')
         parse_tree = parser.parse(tokens)
-        dot_source = parse_tree.render(directory='out', name='test-parser-test-regex-parse-tree', output_format='svg')
+        dot_source = ptree.render(
+            parse_tree,
+            directory='out',
+            name='test-parser-test-regex-parse-tree',
+            output_format='svg',
+        )
         self._assertDotEqual(
             """
             digraph {

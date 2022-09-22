@@ -36,7 +36,7 @@ class TestGrammar(unittest.TestCase):
         config = ptree.load_config('configs/test-grammar-test-parse-table.yaml')
         grammar = Grammar(config)
         grammar.init()
-        print(grammar.parse_table)
+        ptree.pprint(grammar.parse_table)
 
 
 if __name__ == '__main__':

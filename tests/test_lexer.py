@@ -11,7 +11,7 @@ class TestLexer(unittest.TestCase):
         config = ptree.load_config('configs/test-lexer-test-ab.yaml')
         grammar = ptree.Grammar(config)
         lexer = ptree.Lexer(config, symbol_pool=grammar.symbol_pool)
-        lexer._dfa.render(directory='out', name='test-lexer-test-ab-dfa', output_format='svg')
+        ptree.render(lexer._dfa, directory='out', name='test-lexer-test-ab-dfa', output_format='svg')
         result = lexer.tokenize('aabaabc abaab')
         self.assertEqual(Token('ab', grammar.symbol_pool.get_terminal('AB2')), result[0])
         self.assertEqual(Token('abc', grammar.symbol_pool.get_terminal('ABC')), result[1])

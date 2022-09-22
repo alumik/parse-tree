@@ -171,15 +171,15 @@ class ParseTable:
                  config: Dict[str, Any],
                  symbol_pool: SymbolPool,
                  start_symbol: Nonterminal):
-        self._config = config
-        self._symbol_pool = symbol_pool
-        self._start_symbol = start_symbol
+        self.config = config
+        self.symbol_pool = symbol_pool
+        self.start_symbol = start_symbol
         self.transitions = {}
 
         state_list = []
-        start_state = ParseState(self._symbol_pool)
-        for rule in self._start_symbol.rules:
-            item = ParseItem(rule=rule, lookahead=self._symbol_pool.get_terminal(Grammar.END_SYMBOL_NAME))
+        start_state = ParseState(self.symbol_pool)
+        for rule in self.start_symbol.rules:
+            item = ParseItem(rule=rule, lookahead=self.symbol_pool.get_terminal(Grammar.END_SYMBOL_NAME))
             start_state.items.add(item)
         start_state.closure()
         state_list.append(start_state)
@@ -190,8 +190,8 @@ class ParseTable:
             for item in state.items:
                 if item.is_end():
                     transition_type = Transition.TYPE_REDUCE
-                    if item.rule.left == self._start_symbol and \
-                            item.lookahead == self._symbol_pool.get_terminal(Grammar.END_SYMBOL_NAME):
+                    if item.rule.left == self.start_symbol and \
+                            item.lookahead == self.symbol_pool.get_terminal(Grammar.END_SYMBOL_NAME):
                         transition_type = Transition.TYPE_ACCEPT
                     self.transitions.setdefault(self.state_id_map[state], {})[item.lookahead] = Transition(
                         source=self.state_id_map[state],
@@ -201,7 +201,7 @@ class ParseTable:
                     )
                 else:
                     symbol = item.next()
-                    new_state = ParseState(self._symbol_pool)
+                    new_state = ParseState(self.symbol_pool)
                     for item_ in state.items:
                         if item_.next() == symbol:
                             new_state.items.add(ParseItem.advance(item_))
@@ -221,44 +221,6 @@ class ParseTable:
                     )
             if not state_list:
                 break
-
-    def __str__(self) -> str:
-        from dashtable import data2rst
-        terminals = list(self._config['terminal_symbols'])
-        nonterminals = list(self._config['nonterminal_symbols'])
-        terminals.append(Grammar.END_SYMBOL_NAME)
-        table = [
-            [
-                '',
-                'ACTION',
-                *['' for _ in range(len(terminals) - 1)],
-                'GOTO',
-                *['' for _ in range(len(nonterminals) - 1)],
-                'STATE',
-            ],
-            ['', *terminals, *nonterminals, ''],
-        ]
-        for state, state_id in self.state_id_map.items():
-            row = [state_id]
-            for name in terminals + nonterminals:
-                symbol = self._symbol_pool.get_symbol(name)
-                if symbol in self.transitions[state_id]:
-                    transition = self.transitions[state_id][symbol]
-                    if transition.type == Transition.TYPE_SHIFT:
-                        row.append(f's{transition.target}')
-                    elif transition.type == Transition.TYPE_REDUCE:
-                        row.append(f'r{transition.target.id}')
-                    elif transition.type == Transition.TYPE_ACCEPT:
-                        row.append('acc')
-                    else:
-                        row.append(f'{transition.target}')
-                else:
-                    row.append('')
-            row.append(str(state))
-            table.append(row)
-        action_span = [[0, i + 1] for i in range(len(terminals))]
-        goto_span = [[0, i + 1] for i in range(len(terminals), len(terminals) + len(nonterminals))]
-        return data2rst(table, spans=[action_span, goto_span])
 
 
 class Grammar:

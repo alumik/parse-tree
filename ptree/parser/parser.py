@@ -1,10 +1,7 @@
-import pathlib
-
 from typing import *
 
 from ptree.symbol.symbol import Token
 from ptree.parser.grammar import Grammar, Transition
-from ptree.utils import escaper
 
 
 class ParseTree:
@@ -12,34 +9,6 @@ class ParseTree:
     def __init__(self, token: Token, children: Optional[List['ParseTree']] = None):
         self.token = token
         self.children = children or []
-
-    def render(self,
-               directory: Union[pathlib.Path, str] = '',
-               name: str = 'out',
-               output_format: str = 'svg') -> str:
-        import graphviz
-        dot = graphviz.Digraph(format=output_format, graph_attr={'rankdir': 'TB'})
-        node_id_map = {self: 0}
-        node_queue = [self]
-        while node_queue:
-            node = node_queue.pop()
-            dot.node(str(node_id_map[node]), label=escaper(node.token.symbol.name))
-            if not node.children:
-                dot.node(f'v{node_id_map[node]}', label=escaper(node.token.value), shape='box', color='blue')
-                dot.edge(
-                    str(node_id_map[node]),
-                    f'v{node_id_map[node]}',
-                    style='dashed',
-                    color='blue',
-                    arrowhead='none',
-                )
-            for child in node.children:
-                if child not in node_id_map:
-                    node_id_map[child] = len(node_id_map)
-                    node_queue.append(child)
-                dot.edge(str(node_id_map[node]), str(node_id_map[child]))
-        dot.render(str(pathlib.Path(directory) / name))
-        return dot.source
 
 
 class Parser:

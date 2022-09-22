@@ -1,5 +1,7 @@
 import unittest
 
+import ptree
+
 from ptree.lexer.fsm import FSMState, NFA
 from ptree.lexer.regex import Regex, RegexEngine
 
@@ -35,10 +37,10 @@ class TestFSM(unittest.TestCase):
 
         s10.accept_list = ['(a|b)*abb']
         nfa = NFA(s0)
-        nfa.render(directory='out', name='test-nfa-to-dfa-nfa', output_format='svg')
+        ptree.render(nfa, directory='out', name='test-nfa-to-dfa-nfa', output_format='svg')
 
         dfa = nfa.to_dfa()
-        dfa.render(directory='out', name='test-nfa-to-dfa-dfa', output_format='svg')
+        ptree.render(nfa, directory='out', name='test-nfa-to-dfa-dfa', output_format='svg')
 
         self.assertEqual(None, dfa.match('abdsffgabb'))
         self.assertEqual(None, dfa.match('abab'))
@@ -62,25 +64,25 @@ class TestFSM(unittest.TestCase):
         s1.add_transition('b', s1)
         s1.accept_list = ['a*b+']
         nfa0 = NFA(s0)
-        nfa0.render(directory='out', name='test-merge-fsm-nfa0', output_format='svg')
+        ptree.render(nfa0, directory='out', name='test-merge-fsm-nfa0', output_format='svg')
 
         s2.add_transition('a', s3)
         s3.accept_list = ['a']
         nfa1 = NFA(s2)
-        nfa1.render(directory='out', name='test-merge-fsm-nfa1', output_format='svg')
+        ptree.render(nfa1, directory='out', name='test-merge-fsm-nfa1', output_format='svg')
 
         s4.add_transition('a', s5)
         s5.add_transition('b', s6)
         s6.add_transition('b', s7)
         s7.accept_list = ['abb']
         nfa2 = NFA(s4)
-        nfa2.render(directory='out', name='test-merge-fsm-nfa2', output_format='svg')
+        ptree.render(nfa2, directory='out', name='test-merge-fsm-nfa2', output_format='svg')
 
         nfa = NFA.union([nfa0, nfa1, nfa2])
-        nfa.render(directory='out', name='test-merge-fsm-nfa', output_format='svg')
+        ptree.render(nfa, directory='out', name='test-merge-fsm-nfa', output_format='svg')
 
         dfa = nfa.to_dfa()
-        dfa.render(directory='out', name='test-merge-fsm-dfa', output_format='svg')
+        ptree.render(dfa, directory='out', name='test-merge-fsm-dfa', output_format='svg')
 
         self.assertIn(dfa.match('abb'), [('a*b+', 3), ('abb', 3)])
         self.assertEqual(('a*b+', 4), dfa.match('abbb'))
@@ -92,9 +94,9 @@ class TestFSM(unittest.TestCase):
         regex = Regex(pattern, pattern)
         engine = RegexEngine()
         nfa = engine.parse(regex)
-        nfa.render(directory='out', name='test-parse-regex-nfa', output_format='svg')
+        ptree.render(nfa, directory='out', name='test-parse-regex-nfa', output_format='svg')
         dfa = nfa.to_dfa()
-        dfa.render(directory='out', name='test-parse-regex-dfa', output_format='svg')
+        ptree.render(dfa, directory='out', name='test-parse-regex-dfa', output_format='svg')
         self.assertEqual(('a+[bcd]ef*[g-j]k+', 5), dfa.match('acehkd'))
 
 
