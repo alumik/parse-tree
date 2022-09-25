@@ -135,7 +135,7 @@ class Transition:
     TYPE_REDUCE = 2
     TYPE_ACCEPT = 3
 
-    def __init__(self, source: int, target: Union[int, ProductionRule], symbol: Symbol, transition_type: int):
+    def __init__(self, source: int, target: int | ProductionRule, symbol: Symbol, transition_type: int):
         self.source = source
         self.target = target
         self.symbol = symbol

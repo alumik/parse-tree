@@ -32,7 +32,7 @@ class SymbolPool:
             raise ValueError(f'nonterminal {name} is not defined')
         return self._nonterminals[name]
 
-    def get_symbol(self, name: str) -> Union[Terminal, Nonterminal]:
+    def get_symbol(self, name: str) -> Terminal | Nonterminal:
         if name in self._terminals:
             return self._terminals[name]
         if name in self._nonterminals:
@@ -45,5 +45,5 @@ class SymbolPool:
     def get_nonterminals(self) -> Set[Nonterminal]:
         return set(self._nonterminals.values())
 
-    def get_symbols(self) -> Set[Union[Terminal, Nonterminal]]:
+    def get_symbols(self) -> Set[Terminal | Nonterminal]:
         return set(self._terminals.values()) | set(self._nonterminals.values())

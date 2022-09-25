@@ -72,7 +72,7 @@ def pprint(obj):
 
 
 def render(obj,
-           directory: Union[pathlib.Path, str] = '',
+           directory: pathlib.Path | str = '',
            name: str = 'out',
            output_format: str = 'svg') -> str:
     import graphviz
