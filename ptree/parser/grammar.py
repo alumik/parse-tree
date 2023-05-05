@@ -1,4 +1,4 @@
-from typing import *
+from typing import Self, Any
 
 from ptree.symbol.symbol import Symbol, Terminal, Nonterminal
 from ptree.symbol.pool import SymbolPool
@@ -6,14 +6,14 @@ from ptree.symbol.pool import SymbolPool
 
 class ProductionRule:
 
-    def __init__(self, left: Nonterminal, right: List[Symbol]):
+    def __init__(self, left: Nonterminal, right: list[Symbol]):
         self.id = None
         self.left = left
         self.right = right
         self.handler = None
 
     @classmethod
-    def from_string(cls, rule: str, symbol_pool: SymbolPool) -> 'ProductionRule':
+    def from_string(cls, rule: str, symbol_pool: SymbolPool) -> Self:
         if '->' not in rule:
             raise ValueError(f'invalid rule: {rule}')
         left, right = rule.split('->')
@@ -47,7 +47,7 @@ class ParseItem:
     def is_end(self) -> bool:
         return self.dot == len(self.rule.right) or self.rule.right[0].name == Grammar.NULL_SYMBOL_NAME
 
-    def next(self) -> Optional[Symbol]:
+    def next(self) -> Symbol | None:
         if self.is_end():
             return None
         return self.rule.right[self.dot]
@@ -82,7 +82,7 @@ class ParseState:
         self._symbol_pool = symbol_pool
         self.items = set()
 
-    def _compute_head(self, symbols: List[Symbol]) -> Set[Symbol]:
+    def _compute_head(self, symbols: list[Symbol]) -> set[Symbol]:
         head = set()
         for symbol in symbols:
             if isinstance(symbol, Nonterminal):
@@ -168,7 +168,7 @@ class Transition:
 class ParseTable:
 
     def __init__(self,
-                 config: Dict[str, Any],
+                 config: dict[str, Any],
                  symbol_pool: SymbolPool,
                  start_symbol: Nonterminal):
         self.config = config
@@ -228,7 +228,7 @@ class Grammar:
     NULL_SYMBOL_NAME = 'null'
     END_SYMBOL_NAME = '$'
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         self._config = config
         self._start_symbol = None
         self._rules = None
@@ -238,7 +238,7 @@ class Grammar:
             set(config['nonterminal_symbols'] or []),
         )
 
-    def init(self, rules: Optional[List[ProductionRule]] = None):
+    def init(self, rules: list[ProductionRule] | None = None):
         self._start_symbol = self.symbol_pool.get_nonterminal(self._config['start_symbol'])
         if rules is None:
             self._start_symbol, self._rules = self._augment()
@@ -255,7 +255,7 @@ class Grammar:
             start_symbol=self._start_symbol,
         )
 
-    def _augment(self) -> Tuple[Nonterminal, List[ProductionRule]]:
+    def _augment(self) -> tuple[Nonterminal, list[ProductionRule]]:
         augmented_start_symbol = self.symbol_pool.get_nonterminal(Grammar.START_SYMBOL_NAME)
         rules = [ProductionRule.from_string(rule, self.symbol_pool) for rule in self._config['production_rules']]
         rules.insert(0, ProductionRule(augmented_start_symbol, [self._start_symbol]))

@@ -1,11 +1,9 @@
-from typing import *
-
 from ptree.symbol.symbol import Terminal, Nonterminal
 
 
 class SymbolPool:
 
-    def __init__(self, terminals: Set[str], nonterminals: Set[str]):
+    def __init__(self, terminals: set[str], nonterminals: set[str]):
         from ptree.parser.grammar import Grammar
         keywords = {
             Grammar.NULL_SYMBOL_NAME: 'an empty string',
@@ -39,11 +37,11 @@ class SymbolPool:
             return self._nonterminals[name]
         raise ValueError(f'symbol {name} is not defined')
 
-    def get_terminals(self) -> Set[Terminal]:
+    def get_terminals(self) -> set[Terminal]:
         return set(self._terminals.values())
 
-    def get_nonterminals(self) -> Set[Nonterminal]:
+    def get_nonterminals(self) -> set[Nonterminal]:
         return set(self._nonterminals.values())
 
-    def get_symbols(self) -> Set[Terminal | Nonterminal]:
+    def get_symbols(self) -> set[Terminal | Nonterminal]:
         return set(self._terminals.values()) | set(self._nonterminals.values())

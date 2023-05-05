@@ -1,4 +1,4 @@
-from typing import *
+from typing import Callable, Self, Optional
 
 
 class FSMState:
@@ -13,12 +13,12 @@ class FSMState:
     def get_one_target(self, on: str) -> Optional['FSMState']:
         return next(iter(self.get_targets(on)), None)
 
-    def get_targets(self, on: str) -> Set['FSMState']:
+    def get_targets(self, on: str) -> set['FSMState']:
         return self.transitions.get(on, set())
 
     def dfs(self,
-            visited: Optional[List['FSMState']] = None,
-            action: Callable[['FSMState'], None] = lambda _: None) -> List['FSMState']:
+            visited: list['FSMState'] | None = None,
+            action: Callable[['FSMState'], None] = lambda _: None) -> list['FSMState']:
         action(self)
         if visited is None:
             visited = []
@@ -34,7 +34,7 @@ class NFA:
     EPSILON = '\0'
     CHARSET = set(chr(i + 1) for i in range(128)) - {'\r', '\n'}
 
-    def __init__(self, start: Optional[FSMState] = None, end: Optional[Set[FSMState]] = None):
+    def __init__(self, start: FSMState | None = None, end: set[FSMState] | None = None):
         self.start = start
         self.end = end or set()
         if self.start is None:
@@ -42,7 +42,7 @@ class NFA:
             self.end.add(self.start)
 
     @classmethod
-    def union(cls, others: List['NFA']) -> 'NFA':
+    def union(cls, others: list['NFA']) -> Self:
         start = FSMState()
         for nfa in others:
             start.add_transition(NFA.EPSILON, nfa.start)
@@ -54,7 +54,7 @@ class NFA:
 
 class DFA(NFA):
 
-    def __init__(self, start: Optional[FSMState] = None):
+    def __init__(self, start: FSMState | None = None):
         super().__init__(start)
         start_closure = self._get_closure({start})
         self.start = FSMState()
@@ -80,7 +80,7 @@ class DFA(NFA):
                 dfa_state.add_transition(on, target_state)
 
     @staticmethod
-    def _get_closure(closure: Set[FSMState]) -> Set[FSMState]:
+    def _get_closure(closure: set[FSMState]) -> set[FSMState]:
         state_queue = list(closure)
         while state_queue:
             state = state_queue.pop()
@@ -91,14 +91,14 @@ class DFA(NFA):
         return closure
 
     @classmethod
-    def union(cls, others: List['DFA']) -> 'DFA':
+    def union(cls, others: list['DFA']) -> Self:
         nfa = super().union(others)
-        return DFA(nfa.start)
+        return cls(nfa.start)
 
-    def to_dfa(self) -> 'DFA':
+    def to_dfa(self) -> Self:
         return self
 
-    def match(self, text: str) -> Optional[Tuple[str, int]]:
+    def match(self, text: str) -> tuple[str, int] | None:
         state = self.start
         end_state, end_index = None, 0
         for i, c in enumerate(text):

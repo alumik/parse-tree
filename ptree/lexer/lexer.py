@@ -1,4 +1,4 @@
-from typing import *
+from typing import Any
 
 from ptree.symbol.symbol import Token
 from ptree.symbol.pool import SymbolPool
@@ -8,7 +8,7 @@ from ptree.lexer.regex import Regex, RegexEngine
 
 class Lexer:
 
-    def __init__(self, config: Dict[str, Any], symbol_pool: SymbolPool):
+    def __init__(self, config: dict[str, Any], symbol_pool: SymbolPool):
         self._config = config
         self._symbol_pool = symbol_pool
         self._symbol_names_and_patterns = self._config['terminal_symbols'] or {}
@@ -24,7 +24,7 @@ class Lexer:
             ),
         )
 
-    def tokenize(self, text: str) -> List[Token]:
+    def tokenize(self, text: str) -> list[Token]:
         result = []
         while text:
             match self._dfa.match(text):

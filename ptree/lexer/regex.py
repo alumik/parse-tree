@@ -1,6 +1,4 @@
-from typing import *
-
-from ptree.symbol.symbol import Symbol, Nonterminal, Token
+from ptree.symbol.symbol import Token
 from ptree.symbol.pool import SymbolPool
 from ptree.lexer.fsm import FSMState, NFA
 from ptree.parser.grammar import ProductionRule, Transition, Grammar
@@ -12,7 +10,7 @@ class Regex:
         self.name = name
         self.pattern = pattern
 
-    def get_tokens(self, symbol_pool: SymbolPool) -> List[Token]:
+    def get_tokens(self, symbol_pool: SymbolPool) -> list[Token]:
         tokens = []
         char_symbol = symbol_pool.get_terminal('char')
         i = 0
@@ -85,7 +83,7 @@ class RegexEngine:
         self._grammar.init(rules)
 
     @staticmethod
-    def _handler_0(nodes: List[NFA], _) -> NFA:
+    def _handler_0(nodes: list[NFA], _) -> NFA:
         """
         E -> E | T
         """
@@ -101,7 +99,7 @@ class RegexEngine:
         return nfa
 
     @staticmethod
-    def _handler_1(nodes: List[NFA], _) -> NFA:
+    def _handler_1(nodes: list[NFA], _) -> NFA:
         """
         E -> T;
         T -> F;
@@ -111,7 +109,7 @@ class RegexEngine:
         return nodes[0]
 
     @staticmethod
-    def _handler_2(nodes: List[NFA], _) -> NFA:
+    def _handler_2(nodes: list[NFA], _) -> NFA:
         """
         T -> T F
         """
@@ -122,14 +120,14 @@ class RegexEngine:
         return nfa
 
     @staticmethod
-    def _handler_3(nodes: List[NFA], _) -> NFA:
+    def _handler_3(nodes: list[NFA], _) -> NFA:
         """
         F -> ( E )
         """
         return nodes[1]
 
     @staticmethod
-    def _handler_4(nodes: List[NFA], _) -> NFA:
+    def _handler_4(nodes: list[NFA], _) -> NFA:
         """
         F -> F *
         """
@@ -144,7 +142,7 @@ class RegexEngine:
         return nfa
 
     @staticmethod
-    def _handler_5(nodes: List[NFA], _) -> NFA:
+    def _handler_5(nodes: list[NFA], _) -> NFA:
         """
         F -> F +
         """
@@ -158,7 +156,7 @@ class RegexEngine:
         return nfa
 
     @staticmethod
-    def _handler_6(nodes: List[NFA], _) -> NFA:
+    def _handler_6(nodes: list[NFA], _) -> NFA:
         """
         P -> .
         """
@@ -170,7 +168,7 @@ class RegexEngine:
         return nfa
 
     @staticmethod
-    def _handler_7(nodes: List[NFA], children: List[Token]) -> NFA:
+    def _handler_7(nodes: list[NFA], children: list[Token]) -> NFA:
         """
         P -> char
         """
@@ -181,7 +179,7 @@ class RegexEngine:
         return nfa
 
     @staticmethod
-    def _handler_8(nodes: List[NFA], children: List[Token]) -> NFA:
+    def _handler_8(nodes: list[NFA], children: list[Token]) -> NFA:
         """
         P -> char - char
         """
@@ -193,7 +191,7 @@ class RegexEngine:
         return nfa
 
     @staticmethod
-    def _handler_9(nodes: List[NFA], _) -> NFA:
+    def _handler_9(nodes: list[NFA], _) -> NFA:
         """
         Px -> Px P
         """
@@ -209,7 +207,7 @@ class RegexEngine:
         return nfa
 
     @staticmethod
-    def _handler_10(nodes: List[NFA], _) -> NFA:
+    def _handler_10(nodes: list[NFA], _) -> NFA:
         """
         F -> [ ^ Px ]
         """

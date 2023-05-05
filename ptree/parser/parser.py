@@ -1,12 +1,10 @@
-from typing import *
-
 from ptree.symbol.symbol import Token
 from ptree.parser.grammar import Grammar, Transition
 
 
 class ParseTree:
 
-    def __init__(self, token: Token, children: Optional[List['ParseTree']] = None):
+    def __init__(self, token: Token, children: list['ParseTree'] | None = None):
         self.token = token
         self.children = children or []
 
@@ -16,7 +14,7 @@ class Parser:
     def __init__(self, grammar: Grammar):
         self._grammar = grammar
 
-    def parse(self, tokens: List[Token]) -> ParseTree:
+    def parse(self, tokens: list[Token]) -> ParseTree:
         parse_table = self._grammar.parse_table
         state_stack = [0]
         node_stack = []

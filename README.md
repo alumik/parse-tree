@@ -1,7 +1,7 @@
 # LR(1) Parse Tree Generator
 
-![version-0.2.1](https://img.shields.io/badge/version-0.2.0-blue)
-![Python-3.10](https://img.shields.io/badge/Python-3.10-blue)
+![version-0.2.2](https://img.shields.io/badge/version-0.2.2-blue)
+![Python->=3.11](https://img.shields.io/badge/Python->=3.11-blue)
 [![license-MIT](https://img.shields.io/badge/license-MIT-green)](https://github.com/AlumiK/parse-tree/blob/main/LICENSE)
 
 ## Demo

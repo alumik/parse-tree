@@ -1,7 +1,7 @@
 import yaml
 import pathlib
 
-from typing import *
+from typing import Any
 
 from ptree.symbol.symbol import Token
 from ptree.lexer.fsm import NFA
@@ -9,7 +9,7 @@ from ptree.parser.grammar import Transition, ParseTable, Grammar
 from ptree.parser.parser import ParseTree
 
 
-def load_config(path: str) -> Dict[str, Any]:
+def load_config(path: str) -> dict[str, Any]:
     with open(path, 'r', encoding='utf-8') as f:
         config = yaml.safe_load(f)
     return config
@@ -26,7 +26,7 @@ def escaper(s: str) -> str:
 
 def pprint(obj):
     from dashtable import data2rst
-    if isinstance(obj, List) and all(isinstance(x, Token) for x in obj):
+    if isinstance(obj, list) and all(isinstance(x, Token) for x in obj):
         table = [['', 'SYMBOL', 'VALUE']]
         for i, token in enumerate(obj):
             table.append([str(i + 1), token.symbol.name, token.value])

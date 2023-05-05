@@ -2,12 +2,10 @@ import fire
 
 import ptree
 
-from typing import *
-
 from ptree.lexer.regex import Regex, RegexEngine
 
 
-def match(pattern: str, text: str) -> Optional[int]:
+def match(pattern: str, text: str) -> int | None:
     regex = Regex(pattern, pattern)
     engine = RegexEngine()
     nfa = engine.parse(regex)
