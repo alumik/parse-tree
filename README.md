@@ -2,7 +2,7 @@
 
 ![version-0.2.2](https://img.shields.io/badge/version-0.2.2-blue)
 ![Python->=3.11](https://img.shields.io/badge/Python->=3.11-blue)
-![license-MIT](https://img.shields.io/badge/license-MIT-green)]
+![license-MIT](https://img.shields.io/badge/license-MIT-green)
 
 ## Demo
 
